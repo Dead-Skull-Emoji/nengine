@@ -1,0 +1,284 @@
+*, *:after, *:before {
+    outline: none;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+html {
+    position: relative;
+}
+
+body{
+    margin:0;
+    position: relative;
+    background-color: #0A0908;
+}
+
+header{
+    font-family: 'Poppins', sans-serif;
+    overflow: hidden;
+    padding: 20px 10px;
+} header a {
+    float: left;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    text-decoration: none;
+    font-size: 1.3em; 
+    line-height: 25px;
+    border-radius: 1rem;
+    transition: 0.5s background-color;
+} header a.logo{
+    padding-left: 1.5rem;
+    font-size: 30px;
+} header a:hover{
+    background-color: rgb(36, 36, 40);
+    color: white;
+} header nav{
+    padding-right: 20px;
+    float: right;
+}
+
+#libig{
+    background: linear-gradient(to right, #ff3399, #f59235, #f3de25, #00ff00, #0099ff, #ab66ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: rainbow_animation 6s ease-in-out infinite;
+    background-size: 400% 100%;
+}
+
+@keyframes rainbow_animation {
+    0%,100% {
+        background-position: 0 0;
+    }
+
+    50% {
+        background-position: 100% 0;
+    }
+}
+
+#huge{
+    color: #ffffff;
+    width: 100%;
+    margin: auto;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    padding: 7rem;
+    font-size:4em;
+    margin-bottom: 4rem;
+}
+
+main{
+    color: #ffffff;
+    width: 100%;
+    margin: auto;
+    text-align: center;
+} main h1{
+    font-family: 'Poppins', sans-serif;
+} main p{
+    margin: auto;
+    font-family: 'Albert Sans', sans-serif;
+    font-size: 1.25em;
+} main a{
+    color: #a2ddff;
+    text-decoration: none;
+} main h2{
+    font-size: 2em;
+    font-family: 'Poppins', sans-serif;
+} 
+
+.one{
+    padding: 10rem 0 10rem 0rem;
+    margin: auto;
+    text-align: center;
+    width: 100%;
+    background-image: url("https://i.imgur.com/ZBycmDO.png");
+    background-color: #303030;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 70vh;
+}
+
+.two{
+    padding: 2rem 0rem 2rem 3rem;
+    background-color: #011638;
+    text-align: left;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+} .two p{
+    margin-left: 0;
+    text-align: left;
+    width: 85%;
+} .two h2{
+    padding-bottom: 0.2rem;
+} .two img{
+    float: right;
+    margin-right: 5rem;
+    border: transparent;
+    border-radius: 0.5rem;
+} .two a{
+    color: #3a49f1;
+}
+
+.three{
+    padding: 2rem 0 2rem 3rem;
+    background-color: #5E503F;
+    text-align: left;
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+} .three p{
+    margin: 0;
+    text-align: left;
+    width: 85%;
+} .three h2{
+    padding-bottom: 0.2rem;
+} .three img{
+    float: right;
+    margin-right: 5rem;
+    border: transparent;
+    border-radius: 100rem;
+}
+
+footer{
+    padding: 2rem 0 2rem 3rem;
+    background-color: #000000;
+    text-align: center;
+} footer nav a:hover{
+    background-color: #eedabb;
+    color: white;
+} footer hr{
+    width: 50%;
+    margin: auto;
+    border: 0.1rem white solid;
+    border-radius: 10rem;
+    margin-bottom: 1rem;
+} footer nav{
+    margin-bottom: 1rem;
+} footer a {
+    font-family: 'Albert Sans', sans-serif;
+    color: white;
+    padding: 10px;
+    text-decoration: none;
+    font-size: 1.5em; 
+    line-height: 25px;
+} footer nav a {
+    font-family: 'Albert Sans', sans-serif;
+    color: white;
+    padding: 0.5rem;
+    text-decoration: none;
+    font-size: 1.5em; 
+    line-height: 25px;
+    border-radius: 1rem;
+    transition: 0.5s background-color;
+}
+
+.one #contacts img{
+    float: none;
+    border-radius: 0.5rem;
+    margin: 0;
+}
+
+#contacts h2{
+    padding-top: 5rem;
+}
+
+.contact-method{
+    font-family: 'Kaisei Decol', 'Times New Roman', Times, serif;
+    background-color:#3c3f46;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    margin: 1rem 0 1rem 0;  
+    color: white;
+    line-height: 3.5em;
+} .contact-method:hover{
+    background-color:#54545e;
+}
+
+@media screen and (max-width: 900px){
+    header {
+        display: flex;
+        flex-direction: column;
+    } header nav{
+        display: flex;
+        text-align: center;
+        padding: 0;
+        font-size: 0.9em;
+        justify-content: center;
+    } header a.logo{
+        padding: 0.9rem;
+    }
+
+    #huge{
+        padding: 2.5rem;
+        font-size:2.5em;
+        margin-bottom: 4rem;
+    }
+
+    .one{
+        padding: 2rem 0 2rem 0;
+        margin: auto;
+        text-align: center;
+        width: 100%;
+        background-image: url("https://i.imgur.com/ZBycmDO.png");
+    }
+
+    .two{
+        padding: 2rem 0 2rem 0;
+        margin: auto;
+        color: black;
+        text-align: center;
+        display: flex;
+        width: 100%;
+        flex-direction: column;
+        align-items: center;
+    } .two p{
+        text-align: center;
+        margin: auto;
+    } .two h2{
+        padding-top: 1rem;
+        margin: auto;
+        padding-bottom: 0.2rem;
+    } .two img{
+        border: transparent;
+        border-radius: 100rem;
+        margin: auto;
+        width: 200px;
+    }
+
+    .three{
+        padding: 2rem 0 2rem 0;
+        margin: auto;
+        text-align: center;
+        display: flex;
+        width: 100%;
+        flex-direction: column;
+        align-items: center;
+    } .three p{
+        text-align: center;
+        margin: auto;
+        padding-bottom: 1rem;
+    } .three h2{
+        margin: auto;
+        padding-bottom: 0.2rem;
+    } .three img{
+        border: transparent;
+        border-radius: 100rem;
+        margin: auto;
+        width: 225px;
+    }
+
+    footer{
+        padding: 2rem 0 2rem 0;
+    } footer nav{
+        font-size: 0.9em;
+    }
+}
