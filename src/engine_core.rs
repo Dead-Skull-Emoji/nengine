@@ -4,7 +4,7 @@ pub fn init() {
 
 pub fn update() -> bool {
     println!("[INFO]: Updating the Nengine!");
-    true
+    return true;
 }
 
 pub fn stop() {
