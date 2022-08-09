@@ -7,7 +7,7 @@ impl Nengine {
         return Nengine {};
     }
     
-    pub fn is_running() -> bool {
+    pub fn is_running(&self) -> bool {
         return true;
     }
     
