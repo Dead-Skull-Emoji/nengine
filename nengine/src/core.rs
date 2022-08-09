@@ -5,13 +5,17 @@
 pub struct Nengine {}
 
 impl Nengine {
-    /// Initializes the Nengine. This does all of the initialization work befo-
-    /// re transferring the ownership to a struct that it will return. In the  
-    /// future one of it's parameters would be a deserialized scene.
+    /// Initializes the Nengine. Because of how Rust works, this can only do s-
+    /// ome of the initialization work. The rest is done by the `init` function
+    /// .
     pub fn new() -> Nengine {
-        println!("[INFO]: Initialized the Nengine.");
+        println!("[INFO]: Starting Phase 0 of Engine Initialization");
 
         return Nengine {};
+    }
+    
+    pub fn init(&mut self) {
+        println!("[INFO]: Starting Phase 1 of Engine Initialization");
     }
     
     /// Returns if the Nengine is still running.
