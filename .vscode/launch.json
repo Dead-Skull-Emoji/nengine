@@ -1,0 +1,120 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in library 'nengine'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--lib",
+                    "--package=nengine"
+                ],
+                "filter": {
+                    "name": "nengine",
+                    "kind": "lib"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'nengine_runtime'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=nengine_runtime",
+                    "--package=nengine"
+                ],
+                "filter": {
+                    "name": "nengine_runtime",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'nengine_runtime'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=nengine_runtime",
+                    "--package=nengine"
+                ],
+                "filter": {
+                    "name": "nengine_runtime",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in library 'nengine_vulkan'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--lib",
+                    "--package=nengine_vulkan"
+                ],
+                "filter": {
+                    "name": "nengine_vulkan",
+                    "kind": "lib"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'nengine_sandbox'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=nengine_sandbox",
+                    "--package=nengine_sandbox"
+                ],
+                "filter": {
+                    "name": "nengine_sandbox",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'nengine_sandbox'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=nengine_sandbox",
+                    "--package=nengine_sandbox"
+                ],
+                "filter": {
+                    "name": "nengine_sandbox",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
