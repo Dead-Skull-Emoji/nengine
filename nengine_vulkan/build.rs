@@ -5,7 +5,7 @@ fn main() {
         let outpath = std::path::PathBuf::from(std::env::var("OUT_DIR").unwrap());
         
         bindgen::builder()
-            .header("src/raw.h")
+            .header("src/backend/raw.h")
             .prepend_enum_name(false)
             .parse_callbacks(Box::new(bindgen::CargoCallbacks))
             .generate()
