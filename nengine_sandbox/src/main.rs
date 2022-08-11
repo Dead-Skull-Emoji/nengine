@@ -6,6 +6,7 @@ fn main() {
         .for_each(|extension| println!("[INFO]: Found Vulkan extension {}", extension));
 
     let instance = Instance::new("Nengine Sandbox", 0, true).unwrap();
+    let _debug_messenger = instance.create_debug_utils_messenger().unwrap();
 
     instance
         .enumerate_physical_devices()
