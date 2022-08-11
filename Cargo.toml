@@ -2,5 +2,6 @@
 
 members = [
     "nengine",
-    "nengine_vulkan"
+    "nengine_vulkan",
+    "nengine_sandbox"
 ]
