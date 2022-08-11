@@ -1,5 +1,6 @@
 [workspace]
 
 members = [
-    "nengine"
+    "nengine",
+    "nengine_vulkan"
 ]
