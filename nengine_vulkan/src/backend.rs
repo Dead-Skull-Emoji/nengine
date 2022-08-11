@@ -144,12 +144,181 @@ impl Instance {
                 .collect()
         }
     }
+
+    pub fn enumerate_physical_devices(&self) -> Vec<PhysicalDevice> {
+        unsafe {
+            let mut device_count = 0;
+            vkEnumeratePhysicalDevices(self.raw_handle, &mut device_count, std::ptr::null_mut());
+
+            let mut devices = Vec::with_capacity(device_count.try_into().unwrap());
+            vkEnumeratePhysicalDevices(self.raw_handle, &mut device_count, devices.as_mut_ptr());
+            devices.set_len(device_count.try_into().unwrap());
+
+            devices
+                .iter()
+                .map(|device| PhysicalDevice {
+                    raw_handle: device.clone(),
+                })
+                .collect()
+        }
+    }
 }
 
 impl Drop for Instance {
     fn drop(&mut self) {
         unsafe {
             vkDestroyInstance(self.raw_handle, std::ptr::null());
+        }
+    }
+}
+
+pub struct PhysicalDeviceProperties {
+    pub device_name: String,
+}
+
+pub struct PhysicalDevice {
+    raw_handle: VkPhysicalDevice,
+}
+
+impl PhysicalDevice {
+    pub fn get_properties(&self) -> PhysicalDeviceProperties {
+        unsafe {
+            let mut device_properties = VkPhysicalDeviceProperties {
+                apiVersion: 0,
+                driverVersion: 0,
+                vendorID: 0,
+                deviceID: 0,
+                deviceType: 0,
+                deviceName: [0; 256],
+                pipelineCacheUUID: [0; 16],
+                limits: VkPhysicalDeviceLimits {
+                    maxImageDimension1D: 0,
+                    maxImageDimension2D: 0,
+                    maxImageDimension3D: 0,
+                    maxImageDimensionCube: 0,
+                    maxImageArrayLayers: 0,
+                    maxTexelBufferElements: 0,
+                    maxUniformBufferRange: 0,
+                    maxStorageBufferRange: 0,
+                    maxPushConstantsSize: 0,
+                    maxMemoryAllocationCount: 0,
+                    maxSamplerAllocationCount: 0,
+                    bufferImageGranularity: 0,
+                    sparseAddressSpaceSize: 0,
+                    maxBoundDescriptorSets: 0,
+                    maxPerStageDescriptorSamplers: 0,
+                    maxPerStageDescriptorUniformBuffers: 0,
+                    maxPerStageDescriptorStorageBuffers: 0,
+                    maxPerStageDescriptorSampledImages: 0,
+                    maxPerStageDescriptorStorageImages: 0,
+                    maxPerStageDescriptorInputAttachments: 0,
+                    maxPerStageResources: 0,
+                    maxDescriptorSetSamplers: 0,
+                    maxDescriptorSetUniformBuffers: 0,
+                    maxDescriptorSetUniformBuffersDynamic: 0,
+                    maxDescriptorSetStorageBuffers: 0,
+                    maxDescriptorSetStorageBuffersDynamic: 0,
+                    maxDescriptorSetSampledImages: 0,
+                    maxDescriptorSetStorageImages: 0,
+                    maxDescriptorSetInputAttachments: 0,
+                    maxVertexInputAttributes: 0,
+                    maxVertexInputBindings: 0,
+                    maxVertexInputAttributeOffset: 0,
+                    maxVertexInputBindingStride: 0,
+                    maxVertexOutputComponents: 0,
+                    maxTessellationGenerationLevel: 0,
+                    maxTessellationPatchSize: 0,
+                    maxTessellationControlPerVertexInputComponents: 0,
+                    maxTessellationControlPerVertexOutputComponents: 0,
+                    maxTessellationControlPerPatchOutputComponents: 0,
+                    maxTessellationControlTotalOutputComponents: 0,
+                    maxTessellationEvaluationInputComponents: 0,
+                    maxTessellationEvaluationOutputComponents: 0,
+                    maxGeometryShaderInvocations: 0,
+                    maxGeometryInputComponents: 0,
+                    maxGeometryOutputComponents: 0,
+                    maxGeometryOutputVertices: 0,
+                    maxGeometryTotalOutputComponents: 0,
+                    maxFragmentInputComponents: 0,
+                    maxFragmentOutputAttachments: 0,
+                    maxFragmentDualSrcAttachments: 0,
+                    maxFragmentCombinedOutputResources: 0,
+                    maxComputeSharedMemorySize: 0,
+                    maxComputeWorkGroupCount: [0; 3],
+                    maxComputeWorkGroupInvocations: 0,
+                    maxComputeWorkGroupSize: [0; 3],
+                    subPixelPrecisionBits: 0,
+                    subTexelPrecisionBits: 0,
+                    mipmapPrecisionBits: 0,
+                    maxDrawIndexedIndexValue: 0,
+                    maxDrawIndirectCount: 0,
+                    maxSamplerLodBias: 0.0,
+                    maxSamplerAnisotropy: 0.0,
+                    maxViewports: 0,
+                    maxViewportDimensions: [0; 2],
+                    viewportBoundsRange: [0.0; 2],
+                    viewportSubPixelBits: 0,
+                    minMemoryMapAlignment: 0,
+                    minTexelBufferOffsetAlignment: 0,
+                    minUniformBufferOffsetAlignment: 0,
+                    minStorageBufferOffsetAlignment: 0,
+                    minTexelOffset: 0,
+                    maxTexelOffset: 0,
+                    minTexelGatherOffset: 0,
+                    maxTexelGatherOffset: 0,
+                    minInterpolationOffset: 0.0,
+                    maxInterpolationOffset: 0.0,
+                    subPixelInterpolationOffsetBits: 0,
+                    maxFramebufferWidth: 0,
+                    maxFramebufferHeight: 0,
+                    maxFramebufferLayers: 0,
+                    framebufferColorSampleCounts: 0,
+                    framebufferDepthSampleCounts: 0,
+                    framebufferStencilSampleCounts: 0,
+                    framebufferNoAttachmentsSampleCounts: 0,
+                    maxColorAttachments: 0,
+                    sampledImageColorSampleCounts: 0,
+                    sampledImageIntegerSampleCounts: 0,
+                    sampledImageDepthSampleCounts: 0,
+                    sampledImageStencilSampleCounts: 0,
+                    storageImageSampleCounts: 0,
+                    maxSampleMaskWords: 0,
+                    timestampComputeAndGraphics: 0,
+                    timestampPeriod: 0.0,
+                    maxClipDistances: 0,
+                    maxCullDistances: 0,
+                    maxCombinedClipAndCullDistances: 0,
+                    discreteQueuePriorities: 0,
+                    pointSizeRange: [0.0; 2],
+                    lineWidthRange: [0.0; 2],
+                    pointSizeGranularity: 0.0,
+                    lineWidthGranularity: 0.0,
+                    strictLines: 0,
+                    standardSampleLocations: 0,
+                    optimalBufferCopyOffsetAlignment: 0,
+                    optimalBufferCopyRowPitchAlignment: 0,
+                    nonCoherentAtomSize: 0,
+                },
+                sparseProperties: VkPhysicalDeviceSparseProperties {
+                    residencyStandard2DBlockShape: 0,
+                    residencyStandard2DMultisampleBlockShape: 0,
+                    residencyStandard3DBlockShape: 0,
+                    residencyAlignedMipSize: 0,
+                    residencyNonResidentStrict: 0,
+                },
+            };
+            vkGetPhysicalDeviceProperties(self.raw_handle, &mut device_properties);
+
+            PhysicalDeviceProperties {
+                device_name: String::from_utf8(
+                    device_properties
+                        .deviceName
+                        .iter()
+                        .map(|x| x.clone() as u8)
+                        .collect(),
+                )
+                .unwrap(),
+            }
         }
     }
 }
