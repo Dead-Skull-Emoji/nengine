@@ -4,6 +4,8 @@ fn main() {
     if target_os == "linux" {
         let outpath = std::path::PathBuf::from(std::env::var("OUT_DIR").unwrap());
         
+        println!("cargo:rustc-link-lib=vulkan");
+        
         bindgen::builder()
             .header("src/backend/raw.h")
             .prepend_enum_name(false)
