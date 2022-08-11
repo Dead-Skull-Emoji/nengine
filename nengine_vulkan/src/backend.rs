@@ -58,7 +58,7 @@ impl Instance {
                 applicationVersion: app_version,
                 pEngineName: b"Nengine\0".as_ptr() as *const i8,
                 engineVersion: VK_VERSION_1_0,
-                apiVersion: make_api_version(0, 1, 0, 0),
+                apiVersion: make_api_version(0, 1, 1, 0),
             };
 
             let validation_layers = vec![b"VK_LAYER_KHRONOS_validation\0".as_ptr() as *const i8];
@@ -160,6 +160,42 @@ impl Instance {
                     raw_handle: device.clone(),
                 })
                 .collect()
+        }
+    }
+
+    pub fn create_debug_utils_messenger(&self) -> Result<DebugUtilsMessengerEXT, ()> {
+        unsafe {
+            let create_info = get_debug_messenger_info();
+
+            if let Some(func) = vkGetInstanceProcAddr(
+                self.raw_handle,
+                b"vkCreateDebugUtilsMessengerEXT\0".as_ptr() as *const i8,
+            ) {
+                let func = std::mem::transmute::<
+                    unsafe extern "C" fn(),
+                    unsafe extern "C" fn(
+                        VkInstance,
+                        *const VkDebugUtilsMessengerCreateInfoEXT,
+                        *const VkAllocationCallbacks,
+                        *mut VkDebugUtilsMessengerEXT,
+                    ) -> VkResult,
+                >(func);
+
+                let mut debug_messenger = std::ptr::null_mut();
+                func(
+                    self.raw_handle,
+                    &create_info,
+                    std::ptr::null(),
+                    &mut debug_messenger,
+                );
+
+                Ok(DebugUtilsMessengerEXT {
+                    raw_handle: debug_messenger,
+                    instance: &self,
+                })
+            } else {
+                Err(())
+            }
         }
     }
 }
@@ -318,6 +354,33 @@ impl PhysicalDevice {
                         .collect(),
                 )
                 .unwrap(),
+            }
+        }
+    }
+}
+
+pub struct DebugUtilsMessengerEXT<'a> {
+    raw_handle: VkDebugUtilsMessengerEXT,
+    instance: &'a Instance,
+}
+
+impl<'a> Drop for DebugUtilsMessengerEXT<'a> {
+    fn drop(&mut self) {
+        unsafe {
+            if let Some(func) = vkGetInstanceProcAddr(
+                self.instance.raw_handle,
+                b"vkDestroyDebugUtilsMessengerEXT\0".as_ptr() as *const i8,
+            ) {
+                let func = std::mem::transmute::<
+                    unsafe extern "C" fn(),
+                    unsafe extern "C" fn(
+                        VkInstance,
+                        VkDebugUtilsMessengerEXT,
+                        *const VkAllocationCallbacks,
+                    ),
+                >(func);
+
+                func(self.instance.raw_handle, self.raw_handle, std::ptr::null());
             }
         }
     }
