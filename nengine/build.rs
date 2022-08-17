@@ -6,6 +6,7 @@ fn main() {
     if target_os == "linux" {
         bindgen::builder()
             .header("src/ffi/xcb.h")
+            .prepend_enum_name(false)
             .parse_callbacks(Box::new(bindgen::CargoCallbacks))
             .generate()
             .expect("Failed to generate bindings for XCB")
