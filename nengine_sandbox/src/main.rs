@@ -1,20 +1,11 @@
-use nengine_vulkan::backend::Instance;
+use nengine::core::Window;
 
 fn main() {
-    Instance::enumerate_instance_extension_names()
-        .iter()
-        .for_each(|extension| println!("[INFO]: Found Vulkan extension {}", extension));
-
-    let instance = Instance::new("Nengine Sandbox", 0, true).unwrap();
-    let _debug_messenger = instance.create_debug_utils_messenger().unwrap();
-
-    instance
-        .enumerate_physical_devices()
-        .iter()
-        .for_each(|device| {
-            println!(
-                "[INFO]: Found Vulkan physical device {}",
-                device.get_properties().device_name
-            )
-        });
+    let mut window = Window::new(800, 600, "bozo", false);
+    
+    window.show();
+    
+    while window.is_open() {
+        window.poll_events();
+    }
 }
