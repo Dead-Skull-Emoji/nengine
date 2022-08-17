@@ -4,6 +4,8 @@ fn main() {
     let out_path = std::path::PathBuf::from(out_dir);
 
     if target_os == "linux" {
+        println!("cargo:rustc-link-lib=xcb");
+        
         bindgen::builder()
             .header("src/ffi/xcb.h")
             .prepend_enum_name(false)
