@@ -28,7 +28,7 @@ unsafe extern "system" fn window_proc(
 }
 
 impl Window {
-    pub fn new(width: u32, height: u32, title: &str, _fullscreen: bool) -> Result<Window, ()> {
+    pub fn new(width: u32, height: u32, title: &str, _fullscreen: bool) -> Window {
         unsafe {
             let class_name = w!("NENGINE_WINDOW_CLASS");
 
@@ -61,14 +61,10 @@ impl Window {
                 GetModuleHandleW(None).unwrap(),
                 std::ptr::null(),
             );
-            
-            if window == HWND(0) {
-                return Err(());
-            }
 
-            Ok(Window {
+            Window {
                 raw_handle: window
-            })
+            }
         }
     }
     
