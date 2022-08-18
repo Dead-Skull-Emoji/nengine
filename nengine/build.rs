@@ -14,7 +14,7 @@ fn main() {
             .expect("Failed to generate bindings for XCB")
             .write_to_file(out_path.join("xcb_bindings.rs"))
             .expect("Failed to write bindings to a file");
-    } else {
-        panic!("Only Linux is supported for now.")
+    } else if target_os == "macos" {
+        panic!("macOS is currently not supported!");
     }
 }
