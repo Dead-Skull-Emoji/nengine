@@ -1,7 +1,7 @@
-use nengine::core::Window;
+use nengine::platform::Window;
 
 fn main() {
-    let mut window = Window::new(800, 600, "bozo", false);
+    let window = Window::new(800, 600, "bozo\0", false).unwrap();
     
     window.show();
     
