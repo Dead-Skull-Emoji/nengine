@@ -1,5 +1,6 @@
 pub mod core;
 pub mod ffi;
+pub mod platform;
 
 #[cfg(test)]
 mod tests {
