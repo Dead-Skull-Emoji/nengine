@@ -40,8 +40,9 @@ impl Window {
             };
 
             RegisterClassW(&window_class);
-
-            let title = OsString::from_str(title).unwrap();
+            
+            let title = title.to_owned() + "\0";
+            let title = OsString::from_str(title.as_str()).unwrap();
             let title = title.as_os_str();
             let title = title.encode_wide();
             let title: Vec<u16> = title.collect();

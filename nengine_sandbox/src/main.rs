@@ -1,7 +1,7 @@
 use nengine::platform::Window;
 
 fn main() {
-    let window = Window::new(800, 600, "bozo\0", false).unwrap();
+    let window = Window::new(800, 600, "Nengine Sandbox", false).unwrap();
     
     window.show();
     
