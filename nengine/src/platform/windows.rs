@@ -2,11 +2,12 @@ use windows::{
     core::PCWSTR,
     w,
     Win32::{
-        Foundation::{HWND, LPARAM, LRESULT, WPARAM},
+        Foundation::{HINSTANCE, HWND, LPARAM, LRESULT, WPARAM},
         System::LibraryLoader::GetModuleHandleW,
         UI::WindowsAndMessaging::{
-            CreateWindowExW, DefWindowProcW, RegisterClassW, CW_USEDEFAULT, HMENU, WINDOW_EX_STYLE,
-            WNDCLASSW, WS_OVERLAPPEDWINDOW, ShowWindow, SW_SHOWNORMAL, GetMessageW, MSG, TranslateMessage, DispatchMessageW
+            CreateWindowExW, DefWindowProcW, DispatchMessageW, GetMessageW, LoadCursorW,
+            RegisterClassW, ShowWindow, TranslateMessage, CW_USEDEFAULT, HMENU, IDC_ARROW, MSG,
+            SW_SHOWNORMAL, WINDOW_EX_STYLE, WNDCLASSW, WS_OVERLAPPEDWINDOW,
         },
     },
 };
@@ -32,15 +33,17 @@ impl super::CrossPlatformWindow for Window {
         unsafe {
             let class_name = w!("NENGINE_WINDOW_CLASS");
 
+            let h_instance = GetModuleHandleW(None).unwrap();
             let window_class = WNDCLASSW {
-                hInstance: GetModuleHandleW(None).unwrap(),
+                hInstance: h_instance,
                 lpszClassName: PCWSTR::from(class_name),
                 lpfnWndProc: Some(window_proc),
+                hCursor: LoadCursorW(HINSTANCE(0), IDC_ARROW).unwrap(),
                 ..Default::default()
             };
 
             RegisterClassW(&window_class);
-            
+
             let title = title.to_owned() + "\0";
             let title = OsString::from_str(title.as_str()).unwrap();
             let title = title.as_os_str();
@@ -58,32 +61,30 @@ impl super::CrossPlatformWindow for Window {
                 height.try_into().unwrap(),
                 HWND::default(),
                 HMENU::default(),
-                GetModuleHandleW(None).unwrap(),
+                h_instance,
                 std::ptr::null(),
             );
 
-            Window {
-                raw_handle: window
-            }
+            Window { raw_handle: window }
         }
     }
-    
+
     fn show(&self) {
         unsafe {
             ShowWindow(self.raw_handle, SW_SHOWNORMAL);
         }
     }
-    
+
     // Todo: needed to add a proper closing mechanism
     fn is_open(&self) -> bool {
         true
     }
-    
+
     fn poll_events(&mut self) {
         unsafe {
             let mut message: MSG = { Default::default() };
             GetMessageW(&mut message, HWND(0), 0, 0);
-            
+
             TranslateMessage(&message);
             DispatchMessageW(&message);
         }
