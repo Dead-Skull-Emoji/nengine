@@ -1,7 +1,8 @@
 use nengine::platform::Window;
+use nengine::platform::CrossPlatformWindow;
 
 fn main() {
-    let window = Window::new(800, 600, "Nengine Sandbox", false);
+    let mut window = Window::new(800, 600, "Nengine Sandbox", false);
     
     window.show();
     

@@ -27,8 +27,8 @@ unsafe extern "system" fn window_proc(
     DefWindowProcW(window, message, w_param, l_param)
 }
 
-impl Window {
-    pub fn new(width: u32, height: u32, title: &str, _fullscreen: bool) -> Window {
+impl super::CrossPlatformWindow for Window {
+    fn new(width: u32, height: u32, title: &str, _fullscreen: bool) -> Window {
         unsafe {
             let class_name = w!("NENGINE_WINDOW_CLASS");
 
@@ -68,18 +68,18 @@ impl Window {
         }
     }
     
-    pub fn show(&self) {
+    fn show(&self) {
         unsafe {
             ShowWindow(self.raw_handle, SW_SHOWNORMAL);
         }
     }
     
     // Todo: needed to add a proper closing mechanism
-    pub fn is_open(&self) -> bool {
+    fn is_open(&self) -> bool {
         true
     }
     
-    pub fn poll_events(&self) {
+    fn poll_events(&mut self) {
         unsafe {
             let mut message: MSG = { Default::default() };
             GetMessageW(&mut message, HWND(0), 0, 0);

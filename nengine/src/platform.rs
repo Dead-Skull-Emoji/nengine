@@ -13,3 +13,15 @@ pub use self::linux::*;
 pub mod windows;
 #[cfg(target_os = "windows")]
 pub use self::windows::*;
+
+/// A Window trait. This trait is used to maintain consistency across the diff-
+/// erent implmenentations of the Window class.
+pub trait CrossPlatformWindow {
+    fn new(width: u32, height: u32, title: &str, fullscreen: bool) -> Self;
+    
+    fn show(&self);
+    
+    fn is_open(&self) -> bool;
+    
+    fn poll_events(&mut self);
+}
