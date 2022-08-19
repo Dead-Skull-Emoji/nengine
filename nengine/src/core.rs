@@ -23,7 +23,7 @@ impl Nengine {
         return true;
     }
 
-    fn on_event(&self, event: Event) {
+    fn _on_event(&self, event: Event) {
         if let Event::Key { keycode, is_press } = event {
             if let Key::W = keycode {
                 if is_press {
