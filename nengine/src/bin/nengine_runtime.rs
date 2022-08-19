@@ -1,4 +1,4 @@
-use nengine::core::Nengine;
+use nengine::Nengine;
 
 fn main() {
     let mut nengine = Nengine::new();
