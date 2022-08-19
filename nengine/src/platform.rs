@@ -19,6 +19,8 @@ pub use self::windows::*;
 pub trait CrossPlatformWindow {
     fn new(width: u32, height: u32, title: &str, fullscreen: bool) -> Self;
     
+    fn set_event_callback(&mut self, callback: fn(crate::Event));
+    
     fn show(&self);
     
     fn is_open(&self) -> bool;
