@@ -1,14 +1,14 @@
-use std::ffi::c_void;
 use crate::ffi::xcb;
+use std::ffi::c_void;
 
 /// The Linux window.
 pub struct Window {
     connection: *mut xcb::xcb_connection_t,
     raw_handle: xcb::xcb_window_t,
     is_open: bool,
-    
+
     // Atoms
-    wm_delete_window_atom: xcb::xcb_atom_t
+    wm_delete_window_atom: xcb::xcb_atom_t,
 }
 
 unsafe fn get_xcb_atom(connection: *mut xcb::xcb_connection_t, name: &str) -> xcb::xcb_atom_t {
@@ -28,7 +28,10 @@ impl super::CrossPlatformWindow for Window {
     ///
     /// One thing you need to note is that the `fullscreen` parameter currently
     /// does not work, but fullscreen functionalities will be added later.
-    fn new(width: u32, height: u32, title: &str, _fullscreen: bool) -> Window {
+    ///
+    /// Also note that `width` and `height` will be ignored if `fullscreen` is
+    /// set to true.
+    fn new(width: u32, height: u32, title: &str, fullscreen: bool) -> Window {
         unsafe {
             let connection = xcb::xcb_connect(std::ptr::null(), std::ptr::null_mut());
             let screen = xcb::xcb_setup_roots_iterator(xcb::xcb_get_setup(connection)).data;
@@ -60,10 +63,10 @@ impl super::CrossPlatformWindow for Window {
                 title.len().try_into().unwrap(),
                 title.as_ptr() as *const c_void,
             );
-            
+
             let wm_protocols_atom = get_xcb_atom(connection, "WM_PROTOCOLS");
             let wm_delete_window_atom = get_xcb_atom(connection, "WM_DELETE_WINDOW");
-            
+
             xcb::xcb_change_property(
                 connection,
                 xcb::XCB_PROP_MODE_REPLACE.try_into().unwrap(),
@@ -72,8 +75,25 @@ impl super::CrossPlatformWindow for Window {
                 4,
                 32,
                 1,
-                &wm_delete_window_atom as *const u32 as *const c_void
+                &wm_delete_window_atom as *const u32 as *const c_void,
             );
+
+            if fullscreen {
+                let net_wm_state_atom = get_xcb_atom(connection, "_NET_WM_STATE");
+                let net_wm_state_fullscreen_atom =
+                    get_xcb_atom(connection, "_NET_WM_STATE_FULLSCREEN");
+
+                xcb::xcb_change_property(
+                    connection,
+                    xcb::XCB_PROP_MODE_APPEND.try_into().unwrap(),
+                    window,
+                    net_wm_state_atom,
+                    4,
+                    32,
+                    1,
+                    &net_wm_state_fullscreen_atom as *const u32 as *const c_void,
+                );
+            }
 
             xcb::xcb_flush(connection);
 
@@ -81,36 +101,40 @@ impl super::CrossPlatformWindow for Window {
                 connection,
                 raw_handle: window,
                 is_open: true,
-                wm_delete_window_atom
+                wm_delete_window_atom,
             }
         }
     }
-    
+
     fn is_open(&self) -> bool {
         self.is_open
     }
-    
+
     fn poll_events(&mut self) {
         unsafe {
             let event = xcb::xcb_poll_for_event(self.connection);
-            
+
             if event == std::ptr::null_mut() {
                 return;
             }
-            
+
             let response_type = (*event).response_type & !0x80;
-            
+
             match response_type as u32 {
                 xcb::XCB_CLIENT_MESSAGE => {
-                    if (*(event as *mut xcb::xcb_client_message_event_t)).data.data32[0] == self.wm_delete_window_atom {
+                    if (*(event as *mut xcb::xcb_client_message_event_t))
+                        .data
+                        .data32[0]
+                        == self.wm_delete_window_atom
+                    {
                         self.is_open = false;
                     }
                 }
-                _ => ()
+                _ => (),
             }
         }
     }
-    
+
     fn show(&self) {
         unsafe {
             xcb::xcb_map_window(self.connection, self.raw_handle);
