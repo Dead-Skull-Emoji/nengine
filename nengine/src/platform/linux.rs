@@ -22,13 +22,13 @@ unsafe fn get_xcb_atom(connection: *mut xcb::xcb_connection_t, name: &str) -> xc
     (*reply).atom
 }
 
-impl Window {
+impl super::CrossPlatformWindow for Window {
     /// Creates a new window. Most of the parameters should be self-explanator-
     /// y.
     ///
     /// One thing you need to note is that the `fullscreen` parameter currently
     /// does not work, but fullscreen functionalities will be added later.
-    pub fn new(width: u32, height: u32, title: &str, _fullscreen: bool) -> Window {
+    fn new(width: u32, height: u32, title: &str, _fullscreen: bool) -> Window {
         unsafe {
             let connection = xcb::xcb_connect(std::ptr::null(), std::ptr::null_mut());
             let screen = xcb::xcb_setup_roots_iterator(xcb::xcb_get_setup(connection)).data;
@@ -86,11 +86,11 @@ impl Window {
         }
     }
     
-    pub fn is_open(&self) -> bool {
+    fn is_open(&self) -> bool {
         self.is_open
     }
     
-    pub fn poll_events(&mut self) {
+    fn poll_events(&mut self) {
         unsafe {
             let event = xcb::xcb_poll_for_event(self.connection);
             
@@ -111,7 +111,7 @@ impl Window {
         }
     }
     
-    pub fn show(&self) {
+    fn show(&self) {
         unsafe {
             xcb::xcb_map_window(self.connection, self.raw_handle);
             xcb::xcb_flush(self.connection);
