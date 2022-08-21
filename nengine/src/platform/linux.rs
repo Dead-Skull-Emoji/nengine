@@ -54,7 +54,8 @@ impl super::CrossPlatformWindow for Window {
 
             let events = [xcb::XCB_EVENT_MASK_EXPOSURE
                 | xcb::XCB_EVENT_MASK_BUTTON_PRESS
-                | xcb::XCB_EVENT_MASK_BUTTON_RELEASE];
+                | xcb::XCB_EVENT_MASK_BUTTON_RELEASE
+                | xcb::XCB_EVENT_MASK_POINTER_MOTION];
 
             let window = xcb::xcb_generate_id(connection);
             xcb::xcb_create_window(
@@ -186,12 +187,23 @@ impl super::CrossPlatformWindow for Window {
                 xcb::XCB_BUTTON_RELEASE => {
                     let event = event as *mut xcb::xcb_button_release_event_t;
                     let button_code = (*event).detail;
-                    
+
                     if button_code != 4 && button_code != 5 {
-                        Some(Event::MouseButton { button: translate_xcb_buttons(button_code), is_press: false })
+                        Some(Event::MouseButton {
+                            button: translate_xcb_buttons(button_code),
+                            is_press: false,
+                        })
                     } else {
                         None
                     }
+                }
+                xcb::XCB_MOTION_NOTIFY => {
+                    let event = event as *mut xcb::xcb_motion_notify_event_t;
+
+                    Some(Event::MouseMove {
+                        x: (*event).event_x.into(),
+                        y: (*event).event_y.into(),
+                    })
                 }
                 _ => None,
             };
