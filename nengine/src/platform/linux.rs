@@ -34,7 +34,7 @@ fn translate_xcb_buttons(xcb_button_code: u8) -> MouseButton {
         8 => MouseButton::Eight,
         9 => MouseButton::Nine,
         10 => MouseButton::Ten,
-        _ => MouseButton::Left
+        _ => MouseButton::Left,
     }
 }
 
@@ -169,10 +169,17 @@ impl super::CrossPlatformWindow for Window {
                 xcb::XCB_BUTTON_PRESS => {
                     let event = event as *mut xcb::xcb_button_press_event_t;
 
-                    Some(Event::MouseButton {
-                        button: translate_xcb_buttons((*event).detail),
-                        is_press: true,
-                    })
+                    let button_code = (*event).detail;
+                    if button_code == 4 {
+                        Some(Event::MouseScroll { x: 0.0, y: 1.0 })
+                    } else if button_code == 5 {
+                        Some(Event::MouseScroll { x: 0.0, y: -1.0 })
+                    } else {
+                        Some(Event::MouseButton {
+                            button: translate_xcb_buttons((*event).detail),
+                            is_press: true,
+                        })
+                    }
                 }
                 _ => None,
             };
