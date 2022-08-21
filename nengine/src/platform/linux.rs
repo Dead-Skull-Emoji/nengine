@@ -52,7 +52,9 @@ impl super::CrossPlatformWindow for Window {
             let connection = xcb::xcb_connect(std::ptr::null(), std::ptr::null_mut());
             let screen = xcb::xcb_setup_roots_iterator(xcb::xcb_get_setup(connection)).data;
 
-            let events = [xcb::XCB_EVENT_MASK_EXPOSURE | xcb::XCB_EVENT_MASK_BUTTON_PRESS];
+            let events = [xcb::XCB_EVENT_MASK_EXPOSURE
+                | xcb::XCB_EVENT_MASK_BUTTON_PRESS
+                | xcb::XCB_EVENT_MASK_BUTTON_RELEASE];
 
             let window = xcb::xcb_generate_id(connection);
             xcb::xcb_create_window(
@@ -179,6 +181,16 @@ impl super::CrossPlatformWindow for Window {
                             button: translate_xcb_buttons((*event).detail),
                             is_press: true,
                         })
+                    }
+                }
+                xcb::XCB_BUTTON_RELEASE => {
+                    let event = event as *mut xcb::xcb_button_release_event_t;
+                    let button_code = (*event).detail;
+                    
+                    if button_code != 4 && button_code != 5 {
+                        Some(Event::MouseButton { button: translate_xcb_buttons(button_code), is_press: false })
+                    } else {
+                        None
                     }
                 }
                 _ => None,
