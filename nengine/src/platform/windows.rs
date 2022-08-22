@@ -5,9 +5,9 @@ use windows::{
         Foundation::{HINSTANCE, HWND, LPARAM, LRESULT, WPARAM},
         System::LibraryLoader::GetModuleHandleW,
         UI::WindowsAndMessaging::{
-            CreateWindowExW, DefWindowProcW, DispatchMessageW, GetMessageW, LoadCursorW,
-            RegisterClassW, ShowWindow, TranslateMessage, CW_USEDEFAULT, HMENU, IDC_ARROW, MSG,
-            SW_SHOWNORMAL, WINDOW_EX_STYLE, WNDCLASSW, WS_OVERLAPPEDWINDOW,
+            CreateWindowExW, DefWindowProcW, LoadCursorW, PeekMessageW, RegisterClassW, ShowWindow,
+            CW_USEDEFAULT, HMENU, IDC_ARROW, MSG, PM_REMOVE, SW_SHOWNORMAL, WINDOW_EX_STYLE,
+            WM_QUIT, WNDCLASSW, WS_OVERLAPPEDWINDOW, TranslateMessage, DispatchMessageW, PostQuitMessage, WM_CLOSE,
         },
     },
 };
@@ -17,6 +17,7 @@ use std::{os::windows::ffi::OsStrExt, str::FromStr};
 
 pub struct Window {
     raw_handle: HWND,
+    is_open: bool,
 }
 
 unsafe extern "system" fn window_proc(
@@ -25,7 +26,13 @@ unsafe extern "system" fn window_proc(
     w_param: WPARAM,
     l_param: LPARAM,
 ) -> LRESULT {
-    DefWindowProcW(window, message, w_param, l_param)
+    match message {
+        WM_CLOSE => {
+            PostQuitMessage(0);
+            windows::Win32::Foundation::LRESULT(0)
+        }
+        _ => DefWindowProcW(window, message, w_param, l_param)
+    }
 }
 
 impl super::CrossPlatformWindow for Window {
@@ -65,8 +72,15 @@ impl super::CrossPlatformWindow for Window {
                 std::ptr::null(),
             );
 
-            Window { raw_handle: window }
+            Window {
+                raw_handle: window,
+                is_open: true,
+            }
         }
+    }
+
+    fn set_event_callback(&mut self, _: fn(crate::Event)) {
+        // TODO: Fill this out later on.
     }
 
     fn show(&self) {
@@ -74,23 +88,23 @@ impl super::CrossPlatformWindow for Window {
             ShowWindow(self.raw_handle, SW_SHOWNORMAL);
         }
     }
-    
-    fn set_event_callback(&mut self, _: fn(crate::Event)) {
-        // TODO: Fill this out later on.
-    }
 
     // Todo: needed to add a proper closing mechanism
     fn is_open(&self) -> bool {
-        true
+        self.is_open
     }
 
     fn poll_events(&mut self) {
         unsafe {
             let mut message: MSG = { Default::default() };
-            GetMessageW(&mut message, HWND(0), 0, 0);
-
-            TranslateMessage(&message);
-            DispatchMessageW(&message);
+            while PeekMessageW(&mut message, self.raw_handle, 0, 0, PM_REMOVE).as_bool() {
+                if message.message == WM_QUIT {
+                    self.is_open = false;
+                } else {
+                    TranslateMessage(&message);
+                    DispatchMessageW(&message);
+                }
+            }
         }
     }
 }
