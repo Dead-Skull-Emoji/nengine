@@ -74,6 +74,10 @@ impl super::CrossPlatformWindow for Window {
             ShowWindow(self.raw_handle, SW_SHOWNORMAL);
         }
     }
+    
+    fn set_event_callback(&mut self, _: fn(crate::Event)) {
+        // TODO: Fill this out later on.
+    }
 
     // Todo: needed to add a proper closing mechanism
     fn is_open(&self) -> bool {
