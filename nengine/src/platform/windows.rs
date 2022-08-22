@@ -5,9 +5,10 @@ use windows::{
         Foundation::{HINSTANCE, HWND, LPARAM, LRESULT, WPARAM},
         System::LibraryLoader::GetModuleHandleW,
         UI::WindowsAndMessaging::{
-            CreateWindowExW, DefWindowProcW, LoadCursorW, PeekMessageW, RegisterClassW, ShowWindow,
-            CW_USEDEFAULT, HMENU, IDC_ARROW, MSG, PM_REMOVE, SW_SHOWNORMAL, WINDOW_EX_STYLE,
-            WM_QUIT, WNDCLASSW, WS_OVERLAPPEDWINDOW, TranslateMessage, DispatchMessageW, PostQuitMessage, WM_CLOSE,
+            CreateWindowExW, DefWindowProcW, DispatchMessageW, LoadCursorW, PeekMessageW,
+            PostQuitMessage, RegisterClassW, ShowWindow, TranslateMessage, CW_USEDEFAULT, HMENU,
+            IDC_ARROW, MSG, PM_REMOVE, SW_SHOWNORMAL, WINDOW_EX_STYLE, WM_CLOSE, WM_QUIT,
+            WNDCLASSW, WS_OVERLAPPEDWINDOW,
         },
     },
 };
@@ -31,7 +32,7 @@ unsafe extern "system" fn window_proc(
             PostQuitMessage(0);
             windows::Win32::Foundation::LRESULT(0)
         }
-        _ => DefWindowProcW(window, message, w_param, l_param)
+        _ => DefWindowProcW(window, message, w_param, l_param),
     }
 }
 
