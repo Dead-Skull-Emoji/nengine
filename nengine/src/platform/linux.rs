@@ -5,28 +5,31 @@ use std::ffi::c_void;
 struct KeyboardMapping {
     context: *mut xcb::xkb_context,
     keymap: *mut xcb::xkb_keymap,
-    state: *mut xcb::xkb_state
+    state: *mut xcb::xkb_state,
 }
 
 impl KeyboardMapping {
-    unsafe fn new(
-        connection: *mut xcb::xcb_connection_t
-    ) -> KeyboardMapping {
+    unsafe fn new(connection: *mut xcb::xcb_connection_t) -> KeyboardMapping {
         let context = xcb::xkb_context_new(xcb::XKB_CONTEXT_NO_FLAGS);
         if context == std::ptr::null_mut() {
             // TODO: Error handling
         }
-        
+
         let core_keyboard_device = xcb::xkb_x11_get_core_keyboard_device_id(connection);
         if core_keyboard_device == -1 {
             // TODO: Error handling
         }
-        
-        let keymap = xcb::xkb_x11_keymap_new_from_device(context, connection, core_keyboard_device, xcb::XKB_KEYMAP_COMPILE_NO_FLAGS);
+
+        let keymap = xcb::xkb_x11_keymap_new_from_device(
+            context,
+            connection,
+            core_keyboard_device,
+            xcb::XKB_KEYMAP_COMPILE_NO_FLAGS,
+        );
         if keymap == std::ptr::null_mut() {
             // TODO: Error handling
         }
-        
+
         let state = xcb::xkb_x11_state_new_from_device(keymap, connection, core_keyboard_device);
         if state == std::ptr::null_mut() {
             // TODO: Error handling
@@ -35,14 +38,30 @@ impl KeyboardMapping {
         KeyboardMapping {
             context,
             keymap,
-            state
+            state,
         }
     }
-    
-    unsafe fn update_keymap(&self, depressed_mods: u32, latched_mods: u32, locked_mods: u32, depressed_layout: u32, latched_layout: u32, locked_layout: u32) {
-        xcb::xkb_state_update_mask(self.state, depressed_mods, latched_mods, locked_mods, depressed_layout, latched_layout, locked_layout);
+
+    unsafe fn update_keymap(
+        &self,
+        depressed_mods: u32,
+        latched_mods: u32,
+        locked_mods: u32,
+        depressed_layout: u32,
+        latched_layout: u32,
+        locked_layout: u32,
+    ) {
+        xcb::xkb_state_update_mask(
+            self.state,
+            depressed_mods,
+            latched_mods,
+            locked_mods,
+            depressed_layout,
+            latched_layout,
+            locked_layout,
+        );
     }
-    
+
     unsafe fn keycode_to_keysym(&self, keycode: xcb::xcb_keycode_t) -> xcb::xcb_keysym_t {
         xcb::xkb_state_key_get_one_sym(self.state, keycode.into())
     }
@@ -63,6 +82,7 @@ pub struct Window {
     connection: *mut xcb::xcb_connection_t,
     raw_handle: xcb::xcb_window_t,
     is_open: bool,
+    
     event_callback: Option<fn(Event)>,
 
     // Atoms
@@ -114,7 +134,8 @@ impl super::CrossPlatformWindow for Window {
                 | xcb::XCB_EVENT_MASK_BUTTON_RELEASE
                 | xcb::XCB_EVENT_MASK_POINTER_MOTION
                 | xcb::XCB_EVENT_MASK_KEY_PRESS
-                | xcb::XCB_EVENT_MASK_KEY_RELEASE];
+                | xcb::XCB_EVENT_MASK_KEY_RELEASE
+                | xcb::XCB_EVENT_MASK_KEYMAP_STATE];
 
             let window = xcb::xcb_generate_id(connection);
             xcb::xcb_create_window(
