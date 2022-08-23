@@ -1,6 +1,63 @@
 use crate::{ffi::xcb, Event, MouseButton};
 use std::ffi::c_void;
 
+/// The keyboard mapping.
+struct KeyboardMapping {
+    context: *mut xcb::xkb_context,
+    keymap: *mut xcb::xkb_keymap,
+    state: *mut xcb::xkb_state
+}
+
+impl KeyboardMapping {
+    unsafe fn new(
+        connection: *mut xcb::xcb_connection_t
+    ) -> KeyboardMapping {
+        let context = xcb::xkb_context_new(xcb::XKB_CONTEXT_NO_FLAGS);
+        if context == std::ptr::null_mut() {
+            // TODO: Error handling
+        }
+        
+        let core_keyboard_device = xcb::xkb_x11_get_core_keyboard_device_id(connection);
+        if core_keyboard_device == -1 {
+            // TODO: Error handling
+        }
+        
+        let keymap = xcb::xkb_x11_keymap_new_from_device(context, connection, core_keyboard_device, xcb::XKB_KEYMAP_COMPILE_NO_FLAGS);
+        if keymap == std::ptr::null_mut() {
+            // TODO: Error handling
+        }
+        
+        let state = xcb::xkb_x11_state_new_from_device(keymap, connection, core_keyboard_device);
+        if state == std::ptr::null_mut() {
+            // TODO: Error handling
+        }
+
+        KeyboardMapping {
+            context,
+            keymap,
+            state
+        }
+    }
+    
+    unsafe fn update_keymap(&self, depressed_mods: u32, latched_mods: u32, locked_mods: u32, depressed_layout: u32, latched_layout: u32, locked_layout: u32) {
+        xcb::xkb_state_update_mask(self.state, depressed_mods, latched_mods, locked_mods, depressed_layout, latched_layout, locked_layout);
+    }
+    
+    unsafe fn keycode_to_keysym(&self, keycode: xcb::xcb_keycode_t) -> xcb::xcb_keysym_t {
+        xcb::xkb_state_key_get_one_sym(self.state, keycode.into())
+    }
+}
+
+impl Drop for KeyboardMapping {
+    fn drop(&mut self) {
+        unsafe {
+            xcb::xkb_state_unref(self.state);
+            xcb::xkb_keymap_unref(self.keymap);
+            xcb::xkb_context_unref(self.context);
+        }
+    }
+}
+
 /// The Linux window.
 pub struct Window {
     connection: *mut xcb::xcb_connection_t,
@@ -55,7 +112,9 @@ impl super::CrossPlatformWindow for Window {
             let events = [xcb::XCB_EVENT_MASK_EXPOSURE
                 | xcb::XCB_EVENT_MASK_BUTTON_PRESS
                 | xcb::XCB_EVENT_MASK_BUTTON_RELEASE
-                | xcb::XCB_EVENT_MASK_POINTER_MOTION];
+                | xcb::XCB_EVENT_MASK_POINTER_MOTION
+                | xcb::XCB_EVENT_MASK_KEY_PRESS
+                | xcb::XCB_EVENT_MASK_KEY_RELEASE];
 
             let window = xcb::xcb_generate_id(connection);
             xcb::xcb_create_window(
@@ -204,6 +263,20 @@ impl super::CrossPlatformWindow for Window {
                         x: (*event).event_x.into(),
                         y: (*event).event_y.into(),
                     })
+                }
+                xcb::XCB_KEY_PRESS => {
+                    let event = event as *mut xcb::xcb_key_press_event_t;
+                    println!("[INFO]: Key {} pressed", (*event).detail);
+
+                    (*event).detail;
+
+                    None
+                }
+                xcb::XCB_KEY_RELEASE => {
+                    let event = event as *mut xcb::xcb_key_release_event_t;
+                    println!("[INFO]: Key {} released", (*event).detail);
+
+                    None
                 }
                 _ => None,
             };
